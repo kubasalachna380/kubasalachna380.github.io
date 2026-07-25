@@ -13,9 +13,6 @@ const navigateButton = document.querySelector("#navigate-button");
 
 let selectedImageUrl = "";
 
-const DECIMAL_COORDINATES_PATTERN =
-  /(-?(?:[0-8]?\d(?:[.,]\d+)?|90(?:[.,]0+)?))\s*[,;]\s*(-?(?:(?:1[0-7]\d|[0-9]?\d)(?:[.,]\d+)?|180(?:[.,]0+)?))/;
-
 function setStatus(message) {
   fileStatus.textContent = message;
 }
@@ -41,6 +38,32 @@ function validateCoordinates() {
   }
 
   return { latitude, longitude };
+}
+
+function extractCoordinates(text) {
+  const normalizedText = text
+    .replace(/[–—−]/g, "-")
+    .replace(/(\d)[Oo](?=[\d.,])/g, (_, digit) => `${digit}0`)
+    .replace(/(\d)[Il](?=[\d.,])/g, (_, digit) => `${digit}1`);
+  const numbers = normalizedText.match(/-?\d{1,3}(?:[.,]\d+)?/g) ?? [];
+
+  for (let index = 0; index < numbers.length - 1; index += 1) {
+    const latitude = normalizeCoordinate(numbers[index]);
+    const longitude = normalizeCoordinate(numbers[index + 1]);
+
+    if (
+      Number.isFinite(latitude) &&
+      Number.isFinite(longitude) &&
+      latitude >= -90 &&
+      latitude <= 90 &&
+      longitude >= -180 &&
+      longitude <= 180
+    ) {
+      return { latitude, longitude };
+    }
+  }
+
+  return null;
 }
 
 function showCoordinates(latitude, longitude, message) {
@@ -99,8 +122,7 @@ async function readCoordinates() {
       },
     });
 
-    const normalizedText = text.replace(/[Oo]/g, "0").replace(/[Il]/g, "1");
-    const coordinates = normalizedText.match(DECIMAL_COORDINATES_PATTERN);
+    const coordinates = extractCoordinates(text);
 
     if (!coordinates) {
       showCoordinates(
@@ -112,9 +134,11 @@ async function readCoordinates() {
       return;
     }
 
-    const latitude = coordinates[1].replace(",", ".");
-    const longitude = coordinates[2].replace(",", ".");
-    showCoordinates(latitude, longitude, "Znaleziono współrzędne. Sprawdź je przed nawigacją.");
+    showCoordinates(
+      coordinates.latitude,
+      coordinates.longitude,
+      "Znaleziono współrzędne. Sprawdź je przed nawigacją."
+    );
     setStatus("Odczyt zakończony.");
   } catch (error) {
     console.error(error);
