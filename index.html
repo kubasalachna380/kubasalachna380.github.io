@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Odczytaj współrzędne ze zdjęcia i rozpocznij nawigację."
+    />
+    <title>Współrzędne ze zdjęcia</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="coordinate-reader" aria-labelledby="app-title">
+        <header class="coordinate-reader__header">
+          <p class="coordinate-reader__eyebrow">Nawigacja</p>
+          <h1 id="app-title">Współrzędne ze zdjęcia</h1>
+          <p class="coordinate-reader__intro">
+            Zrób zdjęcie kartki albo wybierz je z galerii. Tekst zostanie
+            odczytany bezpośrednio na Twoim urządzeniu.
+          </p>
+        </header>
+
+        <div class="coordinate-reader__actions">
+          <label class="button button--primary" for="camera-input">
+            Zrób zdjęcie
+          </label>
+          <input
+            id="camera-input"
+            class="visually-hidden"
+            type="file"
+            accept="image/*"
+            capture="environment"
+          />
+
+          <label class="button button--secondary" for="gallery-input">
+            Wybierz z galerii
+          </label>
+          <input
+            id="gallery-input"
+            class="visually-hidden"
+            type="file"
+            accept="image/*"
+          />
+        </div>
+
+        <p id="file-status" class="coordinate-reader__status" aria-live="polite">
+          Wybierz zdjęcie, aby rozpocząć.
+        </p>
+
+        <figure id="preview-container" class="coordinate-reader__preview" hidden>
+          <img id="image-preview" alt="Wybrane zdjęcie do odczytu tekstu" />
+        </figure>
+
+        <button id="scan-button" class="button button--primary" type="button" disabled>
+          Odczytaj współrzędne
+        </button>
+
+        <section
+          id="result-section"
+          class="coordinate-reader__result"
+          aria-labelledby="result-title"
+          hidden
+        >
+          <h2 id="result-title">Cel podróży</h2>
+          <p id="ocr-summary"></p>
+
+          <div class="coordinate-reader__fields">
+            <label class="field" for="latitude">
+              <span class="field__label">Szerokość geograficzna</span>
+              <input
+                id="latitude"
+                class="field__input"
+                type="text"
+                inputmode="decimal"
+                placeholder="np. 52.2297"
+                autocomplete="off"
+              />
+            </label>
+
+            <label class="field" for="longitude">
+              <span class="field__label">Długość geograficzna</span>
+              <input
+                id="longitude"
+                class="field__input"
+                type="text"
+                inputmode="decimal"
+                placeholder="np. 21.0122"
+                autocomplete="off"
+              />
+            </label>
+          </div>
+
+          <p id="validation-message" class="coordinate-reader__validation" aria-live="polite"></p>
+          <button id="navigate-button" class="button button--primary" type="button">
+            Nawiguj samochodem
+          </button>
+        </section>
+
+        <section class="coordinate-reader__hint" aria-labelledby="hint-title">
+          <h2 id="hint-title">Wskazówka</h2>
+          <p>
+            Najlepiej zapisuj współrzędne dziesiętne, np.
+            <strong>52.2297, 21.0122</strong>. Przed rozpoczęciem trasy sprawdź
+            odczytane wartości.
+          </p>
+        </section>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
